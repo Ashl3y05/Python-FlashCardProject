@@ -13,8 +13,8 @@ data_dict = data.to_dict(orient="records")
 def randomize_dict():
     chosen_data = random.choice(data_dict)
     french_word = chosen_data["French"]
-    english_word = chosen_data["English"]
-    flashcard_canvas.itemconfig(eng_text, text=english_word)
+    flashcard_canvas.itemconfig(word_text, text=french_word)
+    flashcard_canvas.itemconfig(title_text, text="French")
 
 
 # ----------------------------------- UI  ----------------------------------- #
@@ -25,8 +25,8 @@ window.config(padx=50, pady=50,background=BACKGROUND_COLOR)
 flashcard_canvas = Canvas(width=800, height=526, bg=BACKGROUND_COLOR, highlightthickness=0)
 image_file = PhotoImage(file="./images/card_front.png")
 flashcard_canvas.create_image(400, 263, image=image_file)
-flashcard_canvas.create_text(400, 150, text="Title", font=("Ariel", 40, "italic"))
-eng_text = flashcard_canvas.create_text(400, 263, text="Word", font=("Ariel", 60, "bold"))
+title_text = flashcard_canvas.create_text(400, 150, text="Title", font=("Ariel", 40, "italic"))
+word_text = flashcard_canvas.create_text(400, 263, text="Word", font=("Ariel", 60, "bold"))
 flashcard_canvas.grid(column=0, row=0, columnspan=2)
 
 

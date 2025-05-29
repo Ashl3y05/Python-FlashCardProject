@@ -38,4 +38,7 @@ wrong_button.grid(column=0, row=1)
 right_file = PhotoImage(file="./images/right.png",)
 right_button = Button(image=right_file, command=randomize_dict, highlightthickness=0)
 right_button.grid(column=1, row=1)
+
+randomize_dict()
+
 window.mainloop()

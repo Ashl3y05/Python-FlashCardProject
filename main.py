@@ -7,14 +7,25 @@ BACKGROUND_COLOR = "#B1DDC6"
 
 data = pd.read_csv("./data/french_words.csv")
 data_dict = data.to_dict(orient="records")
+chosen_word = {}
 
 # ----------------------------------- FUNCTIONS ----------------------------------- #
 
+
 def randomize_dict():
     chosen_data = random.choice(data_dict)
-    french_word = chosen_data["French"]
+    global chosen_word
+    chosen_word = chosen_data
+    french_word = chosen_word["French"]
     flashcard_canvas.itemconfig(word_text, text=french_word)
     flashcard_canvas.itemconfig(title_text, text="French")
+
+def mod_card():
+    english_word = chosen_word["English"]
+    flashcard_canvas.itemconfig(canvas_image, image=back_image_file)
+    flashcard_canvas.itemconfig(word_text, text=english_word)
+    flashcard_canvas.itemconfig(title_text, text="English")
+
 
 
 # ----------------------------------- UI  ----------------------------------- #
@@ -23,8 +34,9 @@ window.title(string="Flash Card")
 window.config(padx=50, pady=50,background=BACKGROUND_COLOR)
 
 flashcard_canvas = Canvas(width=800, height=526, bg=BACKGROUND_COLOR, highlightthickness=0)
-image_file = PhotoImage(file="./images/card_front.png")
-flashcard_canvas.create_image(400, 263, image=image_file)
+front_image_file = PhotoImage(file="./images/card_front.png")
+back_image_file = PhotoImage(file="./images/card_back.png")
+canvas_image = flashcard_canvas.create_image(400, 263, image=front_image_file)
 title_text = flashcard_canvas.create_text(400, 150, text="Title", font=("Ariel", 40, "italic"))
 word_text = flashcard_canvas.create_text(400, 263, text="Word", font=("Ariel", 60, "bold"))
 flashcard_canvas.grid(column=0, row=0, columnspan=2)
@@ -40,5 +52,7 @@ right_button = Button(image=right_file, command=randomize_dict, highlightthickne
 right_button.grid(column=1, row=1)
 
 randomize_dict()
+
+window.after(3000, mod_card)
 
 window.mainloop()

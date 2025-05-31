@@ -34,6 +34,7 @@ chosen_word = {}
 def randomize_dict():
     global chosen_word, start_timer
     window.after_cancel(start_timer)
+    right_button.config(state="active")
     flashcard_canvas.itemconfig(canvas_image, image=front_image_file)
     chosen_data = random.choice(data_dict)
     chosen_word = chosen_data
@@ -43,6 +44,7 @@ def randomize_dict():
     start_timer = window.after(3000, func=mod_card)
 
 def mod_card():
+    right_button.config(state="disabled")
     english_word = chosen_word["English"]
     flashcard_canvas.itemconfig(canvas_image, image=back_image_file)
     flashcard_canvas.itemconfig(word_text, text=english_word, fill="white")

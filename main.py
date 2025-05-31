@@ -2,25 +2,41 @@ from tkinter import *
 import pandas as pd
 import random
 
-BACKGROUND_COLOR = "#B1DDC6"
-# ----------------------------------- CSV  ----------------------------------- #
+import pandas.errors
 
-data = pd.read_csv("./data/french_words.csv")
+BACKGROUND_COLOR = "#B1DDC6"
+SECONDS_TO_FLIP = 3
+
+data = {}
+# ----------------------------------- READING CSV FILE ----------------------------------- #
+
+def refresh_to_learn_data():
+    global data
+    data = pd.read_csv("./data/french_words.csv")
+    data_copy = pd.DataFrame(data)
+    data_copy.to_csv("./data/words_to_learn.csv", index=False)
+
+try:
+    try:
+        data = pd.read_csv("./data/words_to_learn.csv")
+    except pandas.errors.EmptyDataError:
+        refresh_to_learn_data()
+    else:
+        data.to_dict()
+except FileNotFoundError:
+    refresh_to_learn_data()
 data_dict = data.to_dict(orient="records")
-current_words = []
 chosen_word = {}
 
 # ----------------------------------- FUNCTIONS ----------------------------------- #
 
 
 def randomize_dict():
-    global chosen_word, start_timer, current_words
+    global chosen_word, start_timer
     window.after_cancel(start_timer)
     flashcard_canvas.itemconfig(canvas_image, image=front_image_file)
     chosen_data = random.choice(data_dict)
     chosen_word = chosen_data
-    if chosen_word not in current_words:
-        current_words += chosen_word
     french_word = chosen_word["French"]
     flashcard_canvas.itemconfig(word_text, text=french_word, fill="black")
     flashcard_canvas.itemconfig(title_text, text="French", fill="black")
@@ -33,11 +49,21 @@ def mod_card():
     flashcard_canvas.itemconfig(title_text, text="English", fill="white")
 
 def know_word():
-    randomize_dict()
+    global data_dict, data
+    data_dict.remove(chosen_word)
+    if len(data_dict) != 0:
+        randomize_dict()
+    else:
+        data = pd.read_csv("./data/french_words.csv")
+        data_dict = data.to_dict(orient="records")
+    current_words_dict = pd.DataFrame(data_dict)
+    current_words_dict.to_csv("./data/words_to_learn.csv", index=False)
 # ----------------------------------- UI  ----------------------------------- #
 window = Tk()
 window.title(string="Flash Card")
 window.config(padx=50, pady=50,background=BACKGROUND_COLOR)
+
+
 
 flashcard_canvas = Canvas(width=800, height=526, bg=BACKGROUND_COLOR, highlightthickness=0)
 front_image_file = PhotoImage(file="./images/card_front.png")
@@ -57,8 +83,7 @@ right_file = PhotoImage(file="./images/right.png",)
 right_button = Button(image=right_file, command=know_word, highlightthickness=0)
 right_button.grid(column=1, row=1)
 
-start_timer = window.after(3000, func=mod_card)
+start_timer = window.after(SECONDS_TO_FLIP * 1000, func=mod_card)
 randomize_dict()
-
 
 window.mainloop()

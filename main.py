@@ -7,17 +7,20 @@ BACKGROUND_COLOR = "#B1DDC6"
 
 data = pd.read_csv("./data/french_words.csv")
 data_dict = data.to_dict(orient="records")
+current_words = []
 chosen_word = {}
 
 # ----------------------------------- FUNCTIONS ----------------------------------- #
 
 
 def randomize_dict():
-    global chosen_word, start_timer
+    global chosen_word, start_timer, current_words
     window.after_cancel(start_timer)
     flashcard_canvas.itemconfig(canvas_image, image=front_image_file)
     chosen_data = random.choice(data_dict)
     chosen_word = chosen_data
+    if chosen_word not in current_words:
+        current_words += chosen_word
     french_word = chosen_word["French"]
     flashcard_canvas.itemconfig(word_text, text=french_word, fill="black")
     flashcard_canvas.itemconfig(title_text, text="French", fill="black")
@@ -29,12 +32,12 @@ def mod_card():
     flashcard_canvas.itemconfig(word_text, text=english_word, fill="white")
     flashcard_canvas.itemconfig(title_text, text="English", fill="white")
 
+def know_word():
+    randomize_dict()
 # ----------------------------------- UI  ----------------------------------- #
 window = Tk()
 window.title(string="Flash Card")
 window.config(padx=50, pady=50,background=BACKGROUND_COLOR)
-
-
 
 flashcard_canvas = Canvas(width=800, height=526, bg=BACKGROUND_COLOR, highlightthickness=0)
 front_image_file = PhotoImage(file="./images/card_front.png")
@@ -51,7 +54,7 @@ wrong_button.grid(column=0, row=1)
 
 
 right_file = PhotoImage(file="./images/right.png",)
-right_button = Button(image=right_file, command=randomize_dict, highlightthickness=0)
+right_button = Button(image=right_file, command=know_word, highlightthickness=0)
 right_button.grid(column=1, row=1)
 
 start_timer = window.after(3000, func=mod_card)
